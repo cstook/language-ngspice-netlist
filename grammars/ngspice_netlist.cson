@@ -1,0 +1,48 @@
+# TextMate tutorial: http://manual.macromates.com/en/language_grammars
+
+# Regex to convert keys to unquoted: '(include|match|captures|begin|end|beginCaptures|endCaptures|name|patterns|0|1|2|3|4|5|6|7|8|9|comment|fileTypes|scopeName|repository|contentName|firstLineMatch|foldingStartMarker|foldingStopMarker)':
+
+scopeName: 'source.ngspice' # <scope> should be a short, unique indicator for the language ("js", "php", "c", etc.)
+name: 'ngspice' # The title that will show up in grammar selection and on your status bar.
+fileTypes: [ # An array of file extensions.
+  'cir'
+  'net'
+]
+patterns: [
+  {include: '#directive'}
+  {include: '#constant'}
+  {include: '#comment'}
+  {include: '#continue_line'}
+]
+
+repository:
+  constant:
+    patterns: [
+      {
+        match: '((\\b0(x|X)[0-9a-fA-F](_?[0-9a-fA-F])*)|(\\b0o[0-7](_?[0-7])*)|(\\b0b[0-1](_?[0-1])*)|((\\b[0-9](_?[0-9])*\\.?(_?[0-9]*))|(\\.[0-9](_?[0-9])*))([eE][+-]?[0-9](_?[0-9])*)?(im\\b)?|\\bInf(32)?\\b|\\bNaN(32)?\\b)'
+        name: 'constant.numeric.ngspice'
+      }
+    ]
+  comment:
+    {
+      match: '^\\*.*$'
+      name: 'comment.line.ngspice'
+    }
+  directive:
+    patterns: [
+      {
+        match: '^(\\.)(\\S+)\\s'
+        name: 'entity.directive.ngspice'
+        captures:
+          1: name: 'entity.punctuation.dot.ngspice'
+          2: name: 'keyword.ngspice'
+      }
+    ]
+  continue_line:
+    {
+      match: '^(\\+)(.*)$'
+      captures:
+        0: name: 'meta.continue_line.ngspice'
+        1: name: 'entity.punctuation.plus.ngspice'
+        2: patterns: [{ include: '$self' }]
+    }
