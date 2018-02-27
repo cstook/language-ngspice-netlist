@@ -19,22 +19,27 @@ patterns: [
 repository:
   recursive:
     patterns:[
-      match: '(\\s+)(\\.+)'
+      match: '(\\s*)(.+)'
       name: 'meta.space.ngspice'
       captures:
         1: name: 'punctuation.space.ngspice'
         2: patterns: [{ include: '#recursive' }]
-#      match: '([^=+*/-])+([=+*/-])'
-#      name: 'meta.operators.ngspice'
-#      captures:
-#        1: patterns: [{include: '#recursive'}]
-#        2: name: 'punctuation.operators.ngspice'
+      match: '([=+*/-])([^=+*/-])+'
+      name: 'meta.operators.ngspice'
+      captures:
+        1: name: 'punctuation.operators.ngspice'
+        2: patterns: [{include: '#recursive'}]
+      match: '([A-Za-z0-9_]+)(\\()(.*)'
+      captures:
+        1: name: 'support.function.ngspice'
+        2: name: 'punctuation.leftpar.ngspice'
+        3: patterns: [{ include: '#recursive' }]
       {include: "#constant"}
     ]
   constant:
     patterns: [
       {
-        match: '[^a-zA-Z]([+-.0-9][.0-9]*[eE]{0,1}[+-]{0,1}[0-9]*)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+        match: '(?<![a-zA-Z])([+-.0-9][.0-9]*[eE]{0,1}[+-]{0,1}[0-9]*)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
         name: 'meta.numeric.ngspice'
         captures:
           1: name: 'constant.numeric.ngspice'
