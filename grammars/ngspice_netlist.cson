@@ -8,19 +8,38 @@ fileTypes: [ # An array of file extensions.
   'cir'
   'net'
 ]
+
 patterns: [
   {include: '#directive'}
-  {include: '#constant'}
-  {include: '#comment'}
   {include: '#continue_line'}
+  {include: '#comment'}
+  {include: '#recursive'}
 ]
 
 repository:
+  recursive:
+    patterns:[
+      match: '(\S+)(\s+)'
+      name: 'meta.space.ngspice'
+      captures:
+        1: patterns: [{ include: '#recursive' }]
+        2: name: 'punctuation.space.ngspice'
+#      match: '([^=+*/-])+([=+*/-])'
+#      name: 'meta.operators.ngspice'
+#      captures:
+#        1: patterns: [{include: '#recursive'}]
+#        2: name: 'punctuation.operators.ngspice'
+      {include: "#constant"}
+    ]
   constant:
     patterns: [
       {
-        match: '((\\b0(x|X)[0-9a-fA-F](_?[0-9a-fA-F])*)|(\\b0o[0-7](_?[0-7])*)|(\\b0b[0-1](_?[0-1])*)|((\\b[0-9](_?[0-9])*\\.?(_?[0-9]*))|(\\.[0-9](_?[0-9])*))([eE][+-]?[0-9](_?[0-9])*)?(im\\b)?|\\bInf(32)?\\b|\\bNaN(32)?\\b)'
-        name: 'constant.numeric.ngspice'
+        match: '[^a-zA-Z]([+-.0-9][.0-9]*[eE]{0,1}[+-]{0,1}[0-9]*)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+        name: 'meta.numeric.ngspice'
+        captures:
+          1: name: 'constant.numeric.ngspice'
+          2: name: 'constant.numeric.ngspice'
+          3: name: ''
       }
     ]
   comment:
@@ -31,11 +50,17 @@ repository:
   directive:
     patterns: [
       {
-        match: '^(\\.)(\\S+)\\s'
+        match: '^(\\.)(\\S+)'
         name: 'entity.directive.ngspice'
         captures:
           1: name: 'entity.punctuation.dot.ngspice'
           2: name: 'keyword.ngspice'
+      }
+    ]
+  function:
+    patterns: [
+      {
+        match: ''
       }
     ]
   continue_line:
@@ -44,5 +69,5 @@ repository:
       captures:
         0: name: 'meta.continue_line.ngspice'
         1: name: 'entity.punctuation.plus.ngspice'
-        2: patterns: [{ include: '$self' }]
+        2: patterns: [{ include: '#recursive' }]
     }
