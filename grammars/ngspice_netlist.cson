@@ -19,11 +19,11 @@ patterns: [
 repository:
   recursive:
     patterns:[
-      match: '(\S+)(\s+)'
+      match: '(\\s+)(\\.+)'
       name: 'meta.space.ngspice'
       captures:
-        1: patterns: [{ include: '#recursive' }]
-        2: name: 'punctuation.space.ngspice'
+        1: name: 'punctuation.space.ngspice'
+        2: patterns: [{ include: '#recursive' }]
 #      match: '([^=+*/-])+([=+*/-])'
 #      name: 'meta.operators.ngspice'
 #      captures:
