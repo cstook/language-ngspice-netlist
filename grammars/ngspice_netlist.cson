@@ -39,7 +39,7 @@ repository:
   constant:
     patterns: [
       {
-        match: '(?<![a-zA-Z])([+-.0-9][.0-9]*[eE]{0,1}[+-]{0,1}[0-9]*)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+        match: '(?<![a-zA-Z])([+-]?(?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
         name: 'meta.numeric.ngspice'
         captures:
           1: name: 'constant.numeric.ngspice'
