@@ -21,7 +21,7 @@ repository:
     patterns: [
       {include: '#strings'}
       {include: '#space'}
-      {include: '#operators'}
+#      {include: '#operators'}
       {include: '#function'}
       {include: '#constant'}
    ]
@@ -44,7 +44,7 @@ repository:
       2: name: 'punctuation.leftpar.ngspice'
       3: patterns: [{ include: '#recursive' }]
   constant:
-    match: '(?<![a-zA-Z])([+-]?(?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+    match: '(?<![a-zA-Z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
     name: 'meta.numeric.ngspice'
     captures:
       1: name: 'constant.numeric.ngspice'
@@ -62,20 +62,22 @@ repository:
   strings:
     patterns: [
       {
-        match: '(\')(.*)(\')'
-        name: 'meta.string.single.ngspice'
+        match: '(.*)(\')([^\']*)(\')(.*)'
         captures:
-          1: name:'punctuation.definition.string.begin.ngspice'
-          2: name:'string.quoted.single.ngspice'
-          3: name:'punctuation.definition.string.end.ngspice'
+          1: patterns: [{ include: '#recursive' }]
+          2: name:'punctuation.definition.string.begin.ngspice'
+          3: name:'string.quoted.single.ngspice'
+          4: name:'punctuation.definition.string.end.ngspice'
+          5: patterns: [{ include: '#recursive' }]
       }
       {
-        match: '(\")(.*)(\")'
-        name: 'meta.string.double.ngspice'
+        match: '(.*)(\")([^\"]*)(\")(.*)'
         captures:
-          1: name:'punctuation.definition.string.begin.ngspice'
-          2: name:'string.quoted.double.ngspice'
-          3: name:'punctuation.definition.string.end.ngspice'
+          1: patterns: [{ include: '#recursive' }]
+          2: name:'punctuation.definition.string.begin.ngspice'
+          3: name:'string.quoted.double.ngspice'
+          4: name:'punctuation.definition.string.end.ngspice'
+          5: patterns: [{ include: '#recursive' }]
       }
     ]
   continue_line:{
