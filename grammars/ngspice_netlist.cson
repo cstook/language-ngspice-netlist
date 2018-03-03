@@ -10,69 +10,78 @@ fileTypes: [ # An array of file extensions.
 ]
 
 patterns: [
+  {include: '#comment'}
   {include: '#directive'}
   {include: '#continue_line'}
-  {include: '#comment'}
   {include: '#recursive'}
 ]
 
 repository:
   recursive:
-    patterns:[
-      match: '(\\s*)(.+)'
-      name: 'meta.space.ngspice'
-      captures:
-        1: name: 'punctuation.space.ngspice'
-        2: patterns: [{ include: '#recursive' }]
-      match: '([=+*/-])([^=+*/-])+'
-      name: 'meta.operators.ngspice'
-      captures:
-        1: name: 'punctuation.operators.ngspice'
-        2: patterns: [{include: '#recursive'}]
-      match: '([A-Za-z0-9_]+)(\\()(.*)'
-      captures:
-        1: name: 'support.function.ngspice'
-        2: name: 'punctuation.leftpar.ngspice'
-        3: patterns: [{ include: '#recursive' }]
-      {include: "#constant"}
-    ]
+    patterns: [
+      {include: '#strings'}
+      {include: '#space'}
+      {include: '#operators'}
+      {include: '#function'}
+      {include: '#constant'}
+   ]
+  space:
+    match: '(\\s+)(.+)'
+    name: 'meta.space.ngspice'
+    captures:
+      1: name: 'punctuation.space.ngspice'
+      2: patterns: [{ include: '#recursive' }]
+  operators:
+    match: '([=+*/-])([^=+*/-])+'
+    name: 'meta.operators.ngspice'
+    captures:
+      1: name: 'punctuation.operators.ngspice'
+      2: patterns: [{include: '#recursive'}]
+  functions:
+    match: '([A-Za-z0-9_]+)(\\()(.*)'
+    captures:
+      1: name: 'support.function.ngspice'
+      2: name: 'punctuation.leftpar.ngspice'
+      3: patterns: [{ include: '#recursive' }]
   constant:
-    patterns: [
-      {
-        match: '(?<![a-zA-Z])([+-]?(?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
-        name: 'meta.numeric.ngspice'
-        captures:
-          1: name: 'constant.numeric.ngspice'
-          2: name: 'constant.numeric.ngspice'
-          3: name: ''
-      }
-    ]
+    match: '(?<![a-zA-Z])([+-]?(?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+    name: 'meta.numeric.ngspice'
+    captures:
+      1: name: 'constant.numeric.ngspice'
+      2: name: 'constant.numeric.ngspice'
+      3: name: ''
   comment:
-    {
-      match: '^\\*.*$'
-      name: 'comment.line.ngspice'
-    }
+    match: '^\\*.*$'
+    name: 'comment.line.ngspice'
   directive:
+    match: '^(\\.)(\\S+)'
+    name: 'entity.directive.ngspice'
+    captures:
+      1: name: 'entity.punctuation.dot.ngspice'
+      2: name: 'keyword.ngspice'
+  strings:
     patterns: [
       {
-        match: '^(\\.)(\\S+)'
-        name: 'entity.directive.ngspice'
+        match: '(\')(.*)(\')'
+        name: 'meta.string.single.ngspice'
         captures:
-          1: name: 'entity.punctuation.dot.ngspice'
-          2: name: 'keyword.ngspice'
+          1: name:'punctuation.definition.string.begin.ngspice'
+          2: name:'string.quoted.single.ngspice'
+          3: name:'punctuation.definition.string.end.ngspice'
       }
-    ]
-  function:
-    patterns: [
       {
-        match: ''
+        match: '(\")(.*)(\")'
+        name: 'meta.string.double.ngspice'
+        captures:
+          1: name:'punctuation.definition.string.begin.ngspice'
+          2: name:'string.quoted.double.ngspice'
+          3: name:'punctuation.definition.string.end.ngspice'
       }
     ]
-  continue_line:
-    {
-      match: '^(\\+)(.*)$'
-      captures:
-        0: name: 'meta.continue_line.ngspice'
-        1: name: 'entity.punctuation.plus.ngspice'
-        2: patterns: [{ include: '#recursive' }]
-    }
+  continue_line:{
+    match: '^(\\+)(.*)$'
+    captures:
+      0: name: 'meta.continue_line.ngspice'
+      1: name: 'entity.punctuation.plus.ngspice'
+      2: patterns: [{ include: '#recursive' }]
+  }
