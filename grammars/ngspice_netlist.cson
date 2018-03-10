@@ -23,6 +23,7 @@ repository:
       {include: '#strings'}
       {include: '#space'}
 #      {include: '#function'}
+      {include: '#voltage'}
       {include: '#special_variables'}
       {include: '#ngspice_name'}
       {include: '#constant'}
@@ -89,6 +90,22 @@ repository:
           3: name:'string.quoted.double.ngspice'
           4: name:'punctuation.definition.string.end.ngspice'
           5: patterns: [{ include: '#recursive' }]
+      }
+    ]
+  voltage:
+    patterns: [
+      {
+        match: '(v|V)[(]([^(),]+)[,]([^(),]*)[)]'
+        captures:
+          1: name: 'variable.other.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+      }
+      {
+        match: '(v|V)[(]([^(),]+)[)]'
+        captures:
+          1: name: 'variable.other.ngspice'
+          2: name: 'constant.node.ngspice'
       }
     ]
   continue_line:
