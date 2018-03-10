@@ -32,13 +32,14 @@ repository:
       {include: '#comment'}
       {include: '#control_block'}
       {include: '#directive'}
+      {include: '#circuitElements'}
       {include: '#continue_line'}
       {include: '#recursive'}
     ]
   recursive:
     patterns: [
       {include: '#strings'}
-      {include: '#space'}
+      {include: '#seperator'}
       {include: '#voltage'}
       {include: '#function'}
       {include: '#special_variables'}
@@ -47,7 +48,7 @@ repository:
       {include: '#end_of_line_comment'}
    ]
   seperator:
-    match: '([ ,=])([^ ,=]+)'
+    match: '([ ,=])(.+)'
     captures:
       1: name : 'punctuation.space.ngspice'
       2: patterns: [{include: '#recursive'}]
@@ -102,12 +103,20 @@ repository:
       }
       {
         match: '^(\\.)((?:SUBCKT)|(?:subckt)|(?:Subckt))\\s+([A-Za-z][A-Za-z0-9_]*)\\s+(.*)'
-        name: 'meta.directive.ngspice'
+        name: 'meta.subckt.ngspice'
         captures:
           1: name: 'entity.punctuation.dot.ngspice'
           2: name: 'keyword.ngspice'
           3: name: 'name.ngspice'
-          4: patterns: [{ include: '#theRestAreNodesOrComment' }]
+          4: patterns: [{ include: '#subcktNodesAndStuff' }]
+      }
+      {
+        match: '^(\\.)((?:GLOBAL)|(?:global)|(?:Global))\\s+(.*)'
+        name: 'meta.global.ngspice'
+        captures:
+          1: name: 'entity.punctuation.dot.ngspice'
+          2: name: 'keyword.ngspice'
+          3: patterns: [{ include: '#nodesAndComment' }]
       }
       {
         match: '^(\\.)(\\S+)(.*)'
@@ -116,6 +125,24 @@ repository:
           1: name: 'entity.punctuation.dot.ngspice'
           2: name: 'keyword.ngspice'
           3: patterns: [{ include: '#recursive' }]
+      }
+    ]
+  circuitElements:
+    patterns: [
+      {
+        match: '([RrLlCc][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+(.*)'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+          4: patterns: [{ include: '#recursive' }]
+      }
+      {
+        match: '([Xx][A-Za-z0-9_]+)\\s+(.*)'
+        name: 'meta.subcktcall.ngspice'
+        captures:
+          1: name: 'element.ngspice'
+          2: patterns: [{ include: '#subcktCallNodesAndStuff' }]
       }
     ]
   strings:
@@ -174,13 +201,33 @@ repository:
     patterns:[
       {include: '#recursive'}
     ]
-  theRestAreNodesOrComment:
+  subcktNodesAndStuff: # stuff = parameters and comment
     patterns:[
       {
         match: '([A-Za-z0-9_]+)\\s+([^=]+)(?![A-Za-z0-9_]+\\s*=)'
         captures:
           1: name: 'constant.node.ngspice'
-          2: patterns: [{ include: '#theRestAreNodesOrComment' }]
+          2: patterns: [{ include: '#subcktNodesAndStuff' }]
+      }
+      { include: '#recursive' }
+    ]
+  subcktCallNodesAndStuff: # Of course they are backwards
+    patterns:[
+      {
+        match: '([A-Za-z0-9_]+)\\s+(?![A-Za-z0-9_]+\\s*=)(.*)'
+        captures:
+          1: name: 'constant.node.ngspice'
+          2: patterns: [{ include: '#subcktCallNodesAndStuff' }]
+      }
+      { include: '#recursive' }
+    ]
+  nodesAndComment:
+    patterns:[
+      {
+        match: '([A-Za-z0-9_]+)\\s+'
+        captures:
+          1: name: 'constant.node.ngspice'
+          2: patterns: [{ include: '#nodesAndComment' }]
       }
       { include: '#recursive' }
     ]
