@@ -11,6 +11,7 @@ fileTypes: [ # An array of file extensions.
 
 patterns: [
   {include: '#comment'}
+  {include: '#control_block'}
   {include: '#directive'}
   {include: '#continue_line'}
   {include: '#recursive'}
@@ -21,7 +22,7 @@ repository:
     patterns: [
       {include: '#strings'}
       {include: '#space'}
-      {include: '#function'}
+#      {include: '#function'}
       {include: '#special_variables'}
       {include: '#ngspice_name'}
       {include: '#constant'}
@@ -39,19 +40,19 @@ repository:
       1: name: 'punctuation.space.ngspice'
       2: patterns: [{ include: '#recursive' }]
   special_variables:
-    match: '(?:time)|(?:temper)|(?:hertz)'
+    match: '(?:time)|(?:temper)|(?:hertz):(?:Time)|(?:Temper)|(?:Hertz):(?:TIME)|(?:TEMPER)|(?:HERTZ)'
     name: 'variable.language.ngspice'
   ngspice_name:
-    match: '[A-Za-z]\\S*'
+    match: '[A-Za-z][()]*'
     name: 'name.ngspice'
   functions:
-    match: '([A-Za-z0-9_]+)(\\()(.*)'
+    match: '([A-Za-z][A-Za-z0-9_]*)(\\()(.*)'
     captures:
-      1: name: 'support.function.ngspice'
+      1: name: 'entity.name.function.ngspice'
       2: name: 'punctuation.leftpar.ngspice'
       3: patterns: [{ include: '#recursive' }]
   constant:
-    match: '(?<![a-zA-Z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+    match: '(?<![a-zA-Z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|Meg|mil|MIL|Mil|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
     name: 'meta.numeric.ngspice'
     captures:
       1: name: 'constant.numeric.ngspice'
@@ -90,10 +91,22 @@ repository:
           5: patterns: [{ include: '#recursive' }]
       }
     ]
-  continue_line:{
+  continue_line:
     match: '^(\\+)(.*)$'
     captures:
       0: name: 'meta.continue_line.ngspice'
       1: name: 'entity.punctuation.plus.ngspice'
       2: patterns: [{ include: '#recursive' }]
-  }
+  control_block:
+    begin: '^(.)(control)'
+    beginCaptures:
+      1: name: 'entity.punctuation.dot.ngspice.ngspice'
+      2: name: 'keyword.ngspice'
+    end: '^(.)(endc)'
+    endCaptures:
+      1: name: 'entity.punctuation.dot.ngspice.ngspice'
+      2: name: 'keyword.ngspice'
+    name: 'meta.block.control.ngspice'
+    patterns:[
+      {include: '#recursive'}
+    ]
