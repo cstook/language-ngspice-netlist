@@ -21,22 +21,29 @@ repository:
     patterns: [
       {include: '#strings'}
       {include: '#space'}
-#      {include: '#operators'}
       {include: '#function'}
+      {include: '#special_variables'}
+      {include: '#ngspice_name'}
       {include: '#constant'}
+      {include: '#end_of_line_comment'}
    ]
+  seperator:
+    match: '([ ,=])([^ ,=]+)'
+    captures:
+      1: name : 'punctuation.space.ngspice'
+      2: patterns: [{include: '#recursive'}]
   space:
     match: '(\\s+)(.+)'
     name: 'meta.space.ngspice'
     captures:
       1: name: 'punctuation.space.ngspice'
       2: patterns: [{ include: '#recursive' }]
-  operators:
-    match: '([=+*/-])([^=+*/-])+'
-    name: 'meta.operators.ngspice'
-    captures:
-      1: name: 'punctuation.operators.ngspice'
-      2: patterns: [{include: '#recursive'}]
+  special_variables:
+    match: '(?:time)|(?:temper)|(?:hertz)'
+    name: 'variable.language.ngspice'
+  ngspice_name:
+    match: '[A-Za-z]\\S*'
+    name: 'name.ngspice'
   functions:
     match: '([A-Za-z0-9_]+)(\\()(.*)'
     captures:
@@ -53,6 +60,9 @@ repository:
   comment:
     match: '^\\*.*$'
     name: 'comment.line.ngspice'
+  end_of_line_comment:
+    match: '\\$.*$'
+    name: 'comment.line.end_of_line.ngspice'
   directive:
     match: '^(\\.)(\\S+)'
     name: 'entity.directive.ngspice'
