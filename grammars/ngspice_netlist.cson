@@ -10,20 +10,29 @@ fileTypes: [ # An array of file extensions.
 ]
 
 patterns: [
-  {include: '#comment'}
-  {include: '#control_block'}
-  {include: '#directive'}
-  {include: '#continue_line'}
-  {include: '#recursive'}
+  {
+    match: '[ ]*(.*)'
+    captures:
+      1: patterns: [{include: '#main'}]
+    comment: 'remove leading whietspace'
+  }
 ]
 
 repository:
+  main:
+    patterns: [
+      {include: '#comment'}
+      {include: '#control_block'}
+      {include: '#directive'}
+      {include: '#continue_line'}
+      {include: '#recursive'}
+    ]
   recursive:
     patterns: [
       {include: '#strings'}
       {include: '#space'}
-#      {include: '#function'}
       {include: '#voltage'}
+      {include: '#function'}
       {include: '#special_variables'}
       {include: '#ngspice_name'}
       {include: '#constant'}
@@ -44,12 +53,12 @@ repository:
     match: '(?:time)|(?:temper)|(?:hertz):(?:Time)|(?:Temper)|(?:Hertz):(?:TIME)|(?:TEMPER)|(?:HERTZ)'
     name: 'variable.language.ngspice'
   ngspice_name:
-    match: '[A-Za-z][()]*'
+    match: '[A-Za-z][A-Za-z0-9_]*'
     name: 'name.ngspice'
-  functions:
-    match: '([A-Za-z][A-Za-z0-9_]*)(\\()(.*)'
+  function:
+    match: '([A-Za-z][A-Za-z0-9_]*)([(])(.*)'
     captures:
-      1: name: 'entity.name.function.ngspice'
+      1: name: 'support.function.ngspice'
       2: name: 'punctuation.leftpar.ngspice'
       3: patterns: [{ include: '#recursive' }]
   constant:
@@ -63,14 +72,23 @@ repository:
     match: '^\\*.*$'
     name: 'comment.line.ngspice'
   end_of_line_comment:
-    match: '\\$.*$'
-    name: 'comment.line.end_of_line.ngspice'
+    patterns: [
+      {
+        match: '\\$.*$'
+        name: 'comment.line.end_of_line.ngspice'
+      }
+      {
+        match: '//.*$'
+        name: 'comment.line.end_of_line.ngspice'
+      }
+  ]
   directive:
-    match: '^(\\.)(\\S+)'
-    name: 'entity.directive.ngspice'
+    match: '^(\\.)(\\S+)(.*)'
+    name: 'meta.directive.ngspice'
     captures:
       1: name: 'entity.punctuation.dot.ngspice'
       2: name: 'keyword.ngspice'
+      3: patterns: [{ include: '#recursive' }]
   strings:
     patterns: [
       {
@@ -97,14 +115,14 @@ repository:
       {
         match: '(v|V)[(]([^(),]+)[,]([^(),]*)[)]'
         captures:
-          1: name: 'variable.other.ngspice'
+          1: name: 'support.function.ngspice'
           2: name: 'constant.node.ngspice'
           3: name: 'constant.node.ngspice'
       }
       {
         match: '(v|V)[(]([^(),]+)[)]'
         captures:
-          1: name: 'variable.other.ngspice'
+          1: name: 'support.function.ngspice'
           2: name: 'constant.node.ngspice'
       }
     ]
