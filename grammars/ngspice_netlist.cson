@@ -177,14 +177,10 @@ repository:
   theRestAreNodesOrComment:
     patterns:[
       {
-        match: '([A-Za-z0-9_]+)\\s+(.+)'
+        match: '([A-Za-z0-9_]+)\\s+([^=]+)(?![A-Za-z0-9_]+\\s*=)'
         captures:
           1: name: 'constant.node.ngspice'
           2: patterns: [{ include: '#theRestAreNodesOrComment' }]
       }
-      {
-        match: '([A-Za-z0-9_]+)'
-        name: 'constant.node.ngspice'
-      }
-      { include: '#end_of_line_comment' }
+      { include: '#recursive' }
     ]
