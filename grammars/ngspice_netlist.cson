@@ -59,7 +59,7 @@ repository:
       1: name: 'punctuation.space.ngspice'
       2: patterns: [{ include: '#recursive' }]
   special_variables:
-    match: '(?:time)|(?:temper)|(?:hertz):(?:Time)|(?:Temper)|(?:Hertz):(?:TIME)|(?:TEMPER)|(?:HERTZ)'
+    match: '(?:time)|(?:temper)|(?:hertz)|(?:Time)|(?:Temper)|(?:Hertz)|(?:TIME)|(?:TEMPER)|(?:HERTZ)'
     name: 'variable.language.ngspice'
   ngspice_name:
     match: '[A-Za-z][A-Za-z0-9_]*'
@@ -119,7 +119,7 @@ repository:
           3: patterns: [{ include: '#nodesAndComment' }]
       }
       {
-        match: '^(\\.)(\\S+)(.*)'
+        match: '^(\\.)([^ ()]+)(.*)'
         name: 'meta.directive.ngspice'
         captures:
           1: name: 'entity.punctuation.dot.ngspice'
@@ -130,7 +130,7 @@ repository:
   circuitElements:
     patterns: [
       {
-        match: '([RrLlCc][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+(.*)'
+        match: '([RrLlCcVvIiDdKkWwFfHhBbEeGg][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -138,7 +138,26 @@ repository:
           4: patterns: [{ include: '#recursive' }]
       }
       {
-        match: '([Xx][A-Za-z0-9_]+)\\s+(.*)'
+        match: '([Uu][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+          4: name: 'constant.node.ngspice'
+          5: patterns: [{ include: '#recursive' }]
+      }
+      {
+        match: '([SsGgEeTtOoYy][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+          4: name: 'constant.node.ngspice'
+          5: name: 'constant.node.ngspice'
+          6: patterns: [{ include: '#recursive' }]
+      }
+      {
+        match: '([XxPp][A-Za-z0-9_]+)\\s+(.*)'
         name: 'meta.subcktcall.ngspice'
         captures:
           1: name: 'element.ngspice'
@@ -231,3 +250,16 @@ repository:
       }
       { include: '#recursive' }
     ]
+
+
+# Reserved Words:
+#
+# not and or div mod
+# or, defined, sqr, sqrt,
+# sin, cos, exp, ln, log, log10, arctan, abs, pwr, time, temper, hertz.
+
+# sqr, sqrt, sin, cos, tan, sinh, cosh, tanh
+# asin, acos, atan, asinh, acosh, atanh
+# arctan, exp, ln, log, abs, nint, int, floor
+# ceil, pow, pwr, min, max, sgn, ternary_fcn
+# gauss, agauss, unif, aunif, limit
