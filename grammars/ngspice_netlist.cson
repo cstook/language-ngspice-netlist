@@ -234,10 +234,12 @@ repository:
   subcktNodesAndStuff: # stuff = parameters and comment
     patterns:[
       {
-        match: '([A-Za-z0-9_]+)\\s+([^=]+)(?![A-Za-z0-9_]+\\s*=)'
-        captures:
-          1: name: 'constant.node.ngspice'
-          2: patterns: [{ include: '#subcktNodesAndStuff' }]
+        match: '([A-Za-z0-9_]+)\\s+(?!\\s*=)'
+        name: 'constant.node.ngspice'
+      }
+      {
+        match: '([A-Za-z0-9_]+)$'
+        name: 'constant.node.ngspice'
       }
       { include: '#recursive' }
     ]
