@@ -130,7 +130,7 @@ repository:
   circuitElements:
     patterns: [
       {
-        match: '([Qq][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+(?![A-Za-z0-9_]+\\s*=)([A-Za-z0-9_]+)\\s*(.*)'
+        match: '([QqMm][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+(?![A-Za-z0-9_]+\\s*=)([A-Za-z0-9_]+)\\s*(.*)'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -151,7 +151,7 @@ repository:
           6: patterns: [{ include: '#recursive' }]
       }
       {
-        match: '([UuQq][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
+        match: '([UuQqJjZzMm][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
