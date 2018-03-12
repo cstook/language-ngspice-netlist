@@ -15,26 +15,109 @@ patterns: [
 
 repository:
   stripCommentWhiteSpace:
-    patterns:[
-      {
-        match: '^\\s*\\*.*$'
-        name: 'comment.line.ngspice'
-      }
-      {
-        match: '^\\s*(.*)((?:\\$.*$)|(?://.*$))'
-        captures:
-          1: patterns:[{include:'#main'}]
-          2: name: 'comment.line.end_of_line.ngspice'
-      }
-      {
-        match: '^\\s*(.*)'
-        captures:
-          1: patterns:[{include:'#main'}]
-      }
-    ]
+    match: '^\\s*(.*)'
+    captures:
+      1:patterns:[
+          {
+            match: '^\\*.*$'
+            name: 'comment.line.ngspice'
+          }
+          {
+            match: '^(.*?)((?:\\$.*$)|(?://.*$))'
+            captures:
+              1: patterns:[{include:'#main'}]
+              2: name: 'comment.end_of_line.ngspice'
+          }
+          {
+            match: '^(.*)'
+            captures:
+              1: patterns:[{include:'#main'}]
+          }
+        ]
   main:
     patterns: [
       {include: '#directive'}
-      {include: '#element'}
-      {include: '#continuationLine'} #assume this is part of expression or parameters
+    #  {include: '#element'}
+    #  {include: '#continuationLine'} #assume this is part of expression or parameters
+      {include: '#other'}
+    ]
+  directive:
+    patterns:[
+      {
+        match: '^(\\.)([^ ()]+)'
+        name: 'meta.directive.ngspice'
+        captures:
+          1: name: 'entity.punctuation.dot.ngspice'
+          2: name: 'keyword.ngspice'
+      }
+    ]
+  other:
+    patterns: [
+      {include: '#strings'}
+      {include: '#seperator'}
+      {include: '#voltage'}
+      {include: '#function'}
+      {include: '#special_variables'}
+      {include: '#ngspice_name'}
+      {include: '#constant'}
+   ]
+  seperator:
+    match: '([ ,=]+)'
+    captures:
+      1: name : 'punctuation.seperator.ngspice'
+  space:
+    match: '(\\s+)'
+    name: 'meta.space.ngspice'
+    captures:
+      1: name: 'punctuation.space.ngspice'
+  special_variables:
+    match: '((?:time)|(?:temper)|(?:hertz)|(?:Time)|(?:Temper)|(?:Hertz)|(?:TIME)|(?:TEMPER)|(?:HERTZ))(?!\\S)'
+    name: 'variable.language.ngspice'
+  ngspice_name:
+    match: '[A-Za-z][A-Za-z0-9_]*'
+    name: 'name.ngspice'
+  function:
+    match: '([A-Za-z][A-Za-z0-9_]*)([(])'
+    captures:
+      1: name: 'support.function.ngspice'
+      2: name: 'punctuation.leftpar.ngspice'
+  constant:
+    match: '(?<![a-zA-Z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|Meg|mil|MIL|Mil|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+    name: 'meta.numeric.ngspice'
+    captures:
+      1: name: 'constant.numeric.ngspice'
+      2: name: 'constant.numeric.ngspice'
+      3: name: ''
+  strings:
+    patterns: [
+      {
+        match: '(\')([^\']*)(\')'
+        captures:
+          2: name:'punctuation.definition.string.begin.ngspice'
+          3: name:'string.quoted.single.ngspice'
+          4: name:'punctuation.definition.string.end.ngspice'
+      }
+      {
+        match: '(\")([^\"]*)(\")'
+        captures:
+          2: name:'punctuation.definition.string.begin.ngspice'
+          3: name:'string.quoted.double.ngspice'
+          4: name:'punctuation.definition.string.end.ngspice'
+      }
+    ]
+  voltage:
+    patterns: [
+      {
+        match: '(v|V)[(]([^(),]+)[,]([^(),]*)[)]'
+        captures:
+          1: name: 'support.function.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+      }
+      {
+        match: '(v|V)[(]([^(),]+)[)]'
+        captures:
+          1: name: 'support.function.ngspice'
+          2: name: 'constant.node.ngspice'
+      }
     ]
