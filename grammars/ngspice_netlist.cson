@@ -10,269 +10,31 @@ fileTypes: [ # An array of file extensions.
 ]
 
 patterns: [
-#  { include: '#titleLineIsAComment'}
-  { include: '#removeLeadingWhitespace'}
+  { include: '#stripCommentWhiteSpace'}
 ]
 
 repository:
-  titleLineIsAComment:
-    begin: '^(.start)' #'(.*)'
-    beginCaptures:
-      1: name: 'comment.line.ngspice'
-    end: '^.end' #'(?=not)possible'
-    name: 'meta.everything.ngspice'
-    patterns:[{ include: '#removeLeadingWhitespace'}]
-  removeLeadingWhitespace:
-    match: '[ ]*(.*)'
-    captures:
-      1: patterns: [{include: '#main'}]
-    comment: 'remove leading whietspace'
+  stripCommentWhiteSpace:
+    patterns:[
+      {
+        match: '^\\s*\\*.*$'
+        name: 'comment.line.ngspice'
+      }
+      {
+        match: '^\\s*(.*)((?:\\$.*$)|(?://.*$))'
+        captures:
+          1: patterns:[{include:'#main'}]
+          2: name: 'comment.line.end_of_line.ngspice'
+      }
+      {
+        match: '^\\s*(.*)'
+        captures:
+          1: patterns:[{include:'#main'}]
+      }
+    ]
   main:
     patterns: [
-      {include: '#comment'}
-      {include: '#control_block'}
       {include: '#directive'}
-      {include: '#circuitElements'}
-      {include: '#continue_line'}
-      {include: '#recursive'}
+      {include: '#element'}
+      {include: '#continuationLine'} #assume this is part of expression or parameters
     ]
-  recursive:
-    patterns: [
-      {include: '#strings'}
-      {include: '#seperator'}
-      {include: '#voltage'}
-      {include: '#function'}
-      {include: '#special_variables'}
-      {include: '#ngspice_name'}
-      {include: '#constant'}
-      {include: '#end_of_line_comment'}
-   ]
-  seperator:
-    match: '([ ,=])(.+)'
-    captures:
-      1: name : 'punctuation.space.ngspice'
-      2: patterns: [{include: '#recursive'}]
-  space:
-    match: '(\\s+)(.+)'
-    name: 'meta.space.ngspice'
-    captures:
-      1: name: 'punctuation.space.ngspice'
-      2: patterns: [{ include: '#recursive' }]
-  special_variables:
-    match: '(?:time)|(?:temper)|(?:hertz)|(?:Time)|(?:Temper)|(?:Hertz)|(?:TIME)|(?:TEMPER)|(?:HERTZ)'
-    name: 'variable.language.ngspice'
-  ngspice_name:
-    match: '[A-Za-z][A-Za-z0-9_]*'
-    name: 'name.ngspice'
-  function:
-    match: '([A-Za-z][A-Za-z0-9_]*)([(])(.*)'
-    captures:
-      1: name: 'support.function.ngspice'
-      2: name: 'punctuation.leftpar.ngspice'
-      3: patterns: [{ include: '#recursive' }]
-  constant:
-    match: '(?<![a-zA-Z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|Meg|mil|MIL|Mil|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
-    name: 'meta.numeric.ngspice'
-    captures:
-      1: name: 'constant.numeric.ngspice'
-      2: name: 'constant.numeric.ngspice'
-      3: name: ''
-  comment:
-    match: '^\\*.*$'
-    name: 'comment.line.ngspice'
-  end_of_line_comment:
-    patterns: [
-      {
-        match: '\\$.*$'
-        name: 'comment.line.end_of_line.ngspice'
-      }
-      {
-        match: '//.*$'
-        name: 'comment.line.end_of_line.ngspice'
-      }
-  ]
-  directive:
-    patterns:[
-      {
-        match: '^(\\.)((?:TITLE)|(?:title)|(?:Title))\\s(.*)'
-        name: 'meta.title.ngspice'
-        captures:
-          1: name: 'entity.punctuation.dot.ngspice'
-          2: name: 'keyword.ngspice'
-          3: name: 'comment.line.end_of_line.ngspice'
-      }
-      {
-        match: '^(\\.)((?:SUBCKT)|(?:subckt)|(?:Subckt))\\s+([A-Za-z][A-Za-z0-9_]*)\\s+(.*)'
-        name: 'meta.subckt.ngspice'
-        captures:
-          1: name: 'entity.punctuation.dot.ngspice'
-          2: name: 'keyword.ngspice'
-          3: name: 'name.ngspice'
-          4: patterns: [{ include: '#subcktNodesAndStuff' }]
-      }
-      {
-        match: '^(\\.)((?:GLOBAL)|(?:global)|(?:Global))\\s+(.*)'
-        name: 'meta.global.ngspice'
-        captures:
-          1: name: 'entity.punctuation.dot.ngspice'
-          2: name: 'keyword.ngspice'
-          3: patterns: [{ include: '#nodesAndComment' }]
-      }
-      {
-        match: '^(\\.)([^ ()]+)(.*)'
-        name: 'meta.directive.ngspice'
-        captures:
-          1: name: 'entity.punctuation.dot.ngspice'
-          2: name: 'keyword.ngspice'
-          3: patterns: [{ include: '#recursive' }]
-      }
-    ]
-  circuitElements:
-    patterns: [
-      {
-        match: '([QqMm][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+(?![A-Za-z0-9_]+\\s*=)([A-Za-z0-9_]+)\\s*(.*)'
-        captures:
-          1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: name: 'constant.node.ngspice'
-          5: name: 'constant.node.ngspice'
-          6: name: 'name.ngspice'
-          7: patterns: [{ include: '#recursive' }]
-      }
-      {
-        match: '([SsGgEeTtOoYy][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
-        captures:
-          1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: name: 'constant.node.ngspice'
-          5: name: 'constant.node.ngspice'
-          6: patterns: [{ include: '#recursive' }]
-      }
-      {
-        match: '([UuQqJjZzMm][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
-        captures:
-          1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: name: 'constant.node.ngspice'
-          5: patterns: [{ include: '#recursive' }]
-      }
-      {
-        match: '([RrLlCcVvIiDdKkWwFfHhBbEeGg][A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s+([A-Za-z0-9_]+)\\s*(.*)'
-        captures:
-          1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: patterns: [{ include: '#recursive' }]
-      }
-      {
-        match: '([XxPp][A-Za-z0-9_]+)\\s+(.*)'
-        name: 'meta.subcktcall.ngspice'
-        captures:
-          1: name: 'element.ngspice'
-          2: patterns: [{ include: '#subcktCallNodesAndStuff' }]
-      }
-    ]
-  strings:
-    patterns: [
-      {
-        match: '(.*)(\')([^\']*)(\')(.*)'
-        captures:
-          1: patterns: [{ include: '#recursive' }]
-          2: name:'punctuation.definition.string.begin.ngspice'
-          3: name:'string.quoted.single.ngspice'
-          4: name:'punctuation.definition.string.end.ngspice'
-          5: patterns: [{ include: '#recursive' }]
-      }
-      {
-        match: '(.*)(\")([^\"]*)(\")(.*)'
-        captures:
-          1: patterns: [{ include: '#recursive' }]
-          2: name:'punctuation.definition.string.begin.ngspice'
-          3: name:'string.quoted.double.ngspice'
-          4: name:'punctuation.definition.string.end.ngspice'
-          5: patterns: [{ include: '#recursive' }]
-      }
-    ]
-  voltage:
-    patterns: [
-      {
-        match: '(v|V)[(]([^(),]+)[,]([^(),]*)[)]'
-        captures:
-          1: name: 'support.function.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-      }
-      {
-        match: '(v|V)[(]([^(),]+)[)]'
-        captures:
-          1: name: 'support.function.ngspice'
-          2: name: 'constant.node.ngspice'
-      }
-    ]
-  continue_line:
-    match: '^(\\+)(.*)$'
-    captures:
-      0: name: 'meta.continue_line.ngspice'
-      1: name: 'entity.punctuation.plus.ngspice'
-      2: patterns: [{ include: '#recursive' }]
-  control_block:
-    begin: '^(.)(control)'
-    beginCaptures:
-      1: name: 'entity.punctuation.dot.ngspice.ngspice'
-      2: name: 'keyword.ngspice'
-    end: '^(.)(endc)'
-    endCaptures:
-      1: name: 'entity.punctuation.dot.ngspice.ngspice'
-      2: name: 'keyword.ngspice'
-    name: 'meta.block.control.ngspice'
-    patterns:[
-      {include: '#recursive'}
-    ]
-  subcktNodesAndStuff: # stuff = parameters and comment
-    patterns:[
-      {
-        match: '([A-Za-z0-9_]+)\\s+(?!\\s*=)'
-        name: 'constant.node.ngspice'
-      }
-      {
-        match: '([A-Za-z0-9_]+)$'
-        name: 'constant.node.ngspice'
-      }
-      { include: '#recursive' }
-    ]
-  subcktCallNodesAndStuff: # Of course they are backwards
-    patterns:[
-      {
-        match: '([A-Za-z0-9_]+)\\s+(?![A-Za-z0-9_]+\\s*=)(.*)'
-        captures:
-          1: name: 'constant.node.ngspice'
-          2: patterns: [{ include: '#subcktCallNodesAndStuff' }]
-      }
-      { include: '#recursive' }
-    ]
-  nodesAndComment:
-    patterns:[
-      {
-        match: '([A-Za-z0-9_]+)\\s+'
-        captures:
-          1: name: 'constant.node.ngspice'
-          2: patterns: [{ include: '#nodesAndComment' }]
-      }
-      { include: '#recursive' }
-    ]
-
-
-# Reserved Words:
-#
-# not and or div mod
-# or, defined, sqr, sqrt,
-# sin, cos, exp, ln, log, log10, arctan, abs, pwr, time, temper, hertz.
-
-# sqr, sqrt, sin, cos, tan, sinh, cosh, tanh
-# asin, acos, atan, asinh, acosh, atanh
-# arctan, exp, ln, log, abs, nint, int, floor
-# ceil, pow, pwr, min, max, sgn, ternary_fcn
-# gauss, agauss, unif, aunif, limit
