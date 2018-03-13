@@ -21,10 +21,7 @@ repository:
     match: '^\\s*(.*)'
     captures:
       1:patterns:[
-          {
-            match: '^\\*.*$'
-            name: 'comment.line.ngspice'
-          }
+          {include:'#commentLine'}
           {include:'#endOfLineComments'}
           {
             match: '^(.*)'
@@ -32,6 +29,9 @@ repository:
               1: patterns:[{include:'#main'}]
           }
         ]
+  commentLine:
+    match: '^\\*.*$'
+    name: 'comment.line.ngspice'
   endOfLineComments:
     match: '^(.*?)((?:\\$.*$)|(?://.*$))'
     captures:
@@ -101,7 +101,24 @@ repository:
       2: name: 'keyword.ngspice'
       3: patterns:[{include:'#endOfLineComments'}]
     name: 'meta.block.control.ngspice'
-    patterns:[{include: '#other'}]
+    patterns:[{include: '#stripCommentWhiteSpaceControlBlock'}]
+  stripCommentWhiteSpaceControlBlock:
+    match: '^\\s*(.*)'
+    captures:
+      1:patterns:[
+          {include:'#commentLine'}
+          {
+            match: '^(.*?)((?:\\$.*$)|(?://.*$))'
+            captures:
+              1: patterns:[{include:'#other'}]
+              2: name: 'comment.end_of_line.ngspice'
+          }
+          {
+            match: '^(.*)'
+            captures:
+              1: patterns:[{include:'#other'}]
+          }
+        ]
   element:
     patterns: [
       {
