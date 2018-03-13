@@ -37,14 +37,14 @@ repository:
   main:
     patterns: [
       {include: '#directive'}
-    #  {include: '#element'}
-    #  {include: '#continuationLine'} #assume this is part of expression or parameters
+      {include: '#element'}
+      {include: '#continuationLine'} #assume this is part of expression or parameters
       {include: '#other'}
     ]
   directive:
     patterns:[
       {
-        match: '^(\\.)((?:TITLE)|(?:title)|(?:Title))'
+        match: '^(?i:(\\.)(title)\\s(.*))'
         name: 'meta.title.ngspice'
         captures:
           1: name: 'entity.punctuation.dot.ngspice'
@@ -52,7 +52,7 @@ repository:
           3: name: 'comment.line.end_of_line.ngspice'
       }
       {
-        match: '^(\\.)((?:SUBCKT)|(?:subckt)|(?:Subckt))\\s+([A-Za-z][A-Za-z0-9_]*)\\s+(.*?)\\s+(\\S+\\s*=.*?$)'
+        match: '^(?i:(\\.)(subckt)\\s+([a-z][a-z0-9_]*)\\s+(.*?)(\\s+\\S+\\s*=.*?$))'
         name: 'meta.subckt.ngspice'
         captures:
           1: name: 'entity.punctuation.dot.ngspice'
@@ -62,12 +62,34 @@ repository:
           5: patterns: [{ include: '#other'}]
       }
       {
-        match: '^(\\.)((?:GLOBAL)|(?:global)|(?:Global))\\s+(.*)'
+        match: '^(?i:(\\.)(subckt)\\s+([a-z][a-z0-9_]*)\\s+(.*))'
+        name: 'meta.subckt.ngspice'
+        captures:
+          1: name: 'entity.punctuation.dot.ngspice'
+          2: name: 'keyword.ngspice'
+          3: name: 'name.ngspice'
+          4: patterns: [{ include: '#nodesAny' }]
+      }
+      {
+        match: '^(?i:(\\.)(global)\\s+(.*))'
         name: 'meta.global.ngspice'
         captures:
           1: name: 'entity.punctuation.dot.ngspice'
           2: name: 'keyword.ngspice'
           3: patterns: [{ include: '#nodesAny' }]
+      }
+      {
+        control_block:
+          begin: '^(?i:(\\.)(control)\\s+)'
+          beginCaptures:
+            1: name: 'entity.punctuation.dot.ngspice.ngspice'
+            2: name: 'keyword.ngspice'
+          end: '^(?i:(\\.)(endc)\\s+)'
+          endCaptures:
+            1: name: 'entity.punctuation.dot.ngspice.ngspice'
+            2: name: 'keyword.ngspice'
+          name: 'meta.block.control.ngspice'
+          patterns:[{include: '#other'}]
       }
       {
         match: '^(\\.)([^ ()]+)'
@@ -77,6 +99,63 @@ repository:
           2: name: 'keyword.ngspice'
       }
     ]
+  element:
+    patterns: [
+      {
+        match: '^(?i:([qm][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+(?![a-z0-9_]+\\s*=)([a-z0-9_]+))'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+          4: name: 'constant.node.ngspice'
+          5: name: 'constant.node.ngspice'
+          6: name: 'name.ngspice'
+      }
+      {
+        match: '^(?i:([sgetoy][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+))'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+          4: name: 'constant.node.ngspice'
+          5: name: 'constant.node.ngspice'
+      }
+      {
+        match: '^(?i:([uqjzm][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+))'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+          4: name: 'constant.node.ngspice'
+      }
+      {
+        match: '^(?i:([rlcvidkwfhbeg][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+))'
+        captures:
+          1: name: 'element.ngspice'
+          2: name: 'constant.node.ngspice'
+          3: name: 'constant.node.ngspice'
+      }
+      {
+        match: '^(?i:([xp][a-z0-9_]+)\\s+(.*?)\\s+(\\S+)\\s+(\\S+=.*$))'
+        name: 'meta.subcktcall.ngspice'
+        captures:
+          1: name: 'element.ngspice'
+          2: patterns: [{ include: '#nodesAny' }]
+          3: name: 'element.ngspice'
+          4: patterns: [{include: '#other'}]
+      }
+      {
+        match: '^(?i:([xp][a-z0-9_]+)\\s+(.*)\\s+(\\S+))'
+        name: 'meta.subcktcall.ngspice'
+        captures:
+          1: name: 'element.ngspice'
+          2: patterns: [{ include: '#nodesAny' }]
+          3: name: 'element.ngspice'
+      }
+    ]
+  continuationLine:
+    match: '^(\\+)'
+    name: 'entity.punctuation.plus.ngspice'
   nodesAny:
     match: '([A-Za-z0-9_]+)'
     name: 'constant.node.ngspice'
@@ -100,7 +179,7 @@ repository:
     captures:
       1: name: 'punctuation.space.ngspice'
   special_variables:
-    match: '((?:time)|(?:temper)|(?:hertz)|(?:Time)|(?:Temper)|(?:Hertz)|(?:TIME)|(?:TEMPER)|(?:HERTZ))(?!\\S)'
+    match: '(?i:((?:time)|(?:temper)|(?:hertz))(?!\\S))'
     name: 'variable.language.ngspice'
   ngspice_name:
     match: '[A-Za-z][A-Za-z0-9_]*'
@@ -111,7 +190,7 @@ repository:
       1: name: 'support.function.ngspice'
       2: name: 'punctuation.leftpar.ngspice'
   constant:
-    match: '(?<![a-zA-Z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[eE][-+]?[0-9]+)?)(k|K|meg|MEG|Meg|mil|MIL|Mil|g|G|t|T|m|M|u|U|μ|n|N|p|P|f|F){0,1}([a-z,A-Z,0-9]*)'
+    match: '(?i:(?<![a-z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[e][-+]?[0-9]+)?)(k|meg|mil|g|t|m|u|μ|n|p|f){0,1}([a-z0-9_]*))'
     name: 'meta.numeric.ngspice'
     captures:
       1: name: 'constant.numeric.ngspice'
