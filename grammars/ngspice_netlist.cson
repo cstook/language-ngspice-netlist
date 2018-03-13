@@ -122,7 +122,7 @@ repository:
   element:
     patterns: [
       {
-        match: '^(?i:([qm][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+(?![a-z0-9_]+\\s*=)([a-z0-9_]+))'
+        match: '^(?i:([qm][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+(?![a-z0-9_]+\\s*=)([a-z0-9_]+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -132,7 +132,7 @@ repository:
           6: name: 'name.ngspice'
       }
       {
-        match: '^(?i:([sgetoy][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+))'
+        match: '^(?i:([sgetoy][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -141,7 +141,7 @@ repository:
           5: name: 'constant.node.ngspice'
       }
       {
-        match: '^(?i:([uqjzm][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+))'
+        match: '^(?i:([uqjzm][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -149,7 +149,7 @@ repository:
           4: name: 'constant.node.ngspice'
       }
       {
-        match: '^(?i:([rlcvidkwfhbeg][a-z0-9_]+)\\s+([a-z0-9_]+)\\s+([a-z0-9_]+))'
+        match: '^(?i:([rlcvidkwfhbeg][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -177,7 +177,7 @@ repository:
     match: '^(\\+)'
     name: 'entity.punctuation.plus.ngspice'
   nodesAny:
-    match: '([A-Za-z0-9_]+)'
+    match: '([A-Za-z0-9._]+)'
     name: 'constant.node.ngspice'
   other:
     patterns: [
