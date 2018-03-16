@@ -122,7 +122,7 @@ repository:
   element:
     patterns: [
       {
-        match: '^(?i:([qm][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+(?![a-z0-9_]+\\s*=)([a-z0-9_]+))'
+        match: '^(?i:([qm][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(?![a-z0-9_]+\\s*=)([a-z0-9_]+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -132,7 +132,7 @@ repository:
           6: name: 'name.ngspice'
       }
       {
-        match: '^(?i:([sgetoy][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+))'
+        match: '^(?i:([sgetoy][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -141,7 +141,7 @@ repository:
           5: name: 'constant.node.ngspice'
       }
       {
-        match: '^(?i:([uqjzm][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+))'
+        match: '^(?i:([uqjzm][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -149,7 +149,7 @@ repository:
           4: name: 'constant.node.ngspice'
       }
       {
-        match: '^(?i:([rlcvidkwfhbeg][a-z0-9_]+)\\s+([a-z0-9._]+)\\s+([a-z0-9._]+))'
+        match: '^(?i:([rlcvidkwfhbeg][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+))'
         captures:
           1: name: 'element.ngspice'
           2: name: 'constant.node.ngspice'
@@ -170,15 +170,31 @@ repository:
         captures:
           1: name: 'element.ngspice'
           2: patterns: [{ include: '#nodesAny' }]
-          3: name: 'element.ngspice'
+          3: name: 'name.ngspice'
+      }
+      {
+        # code model element with model name at end on first line
+        match: '^(?i:(a[a-z0-9_]+)\\s+(.*)\\s+([a-z_][a-z0-9._]*)$)'
+        captures:
+          1: name: 'element.ngspice'
+          2: patterns: [{include: '#aTypeNodes'}] #[{include: '#aTypeNodes'}]
+          3: name: 'name.ngspice'
       }
     ]
   continuationLine:
     match: '^(\\+)'
     name: 'entity.punctuation.plus.ngspice'
   nodesAny:
-    match: '([A-Za-z0-9._]+)'
+    match: '([!A-Za-z0-9._]+)'
     name: 'constant.node.ngspice'
+  aTypeNodes:
+    patterns: [
+      {
+        match: '(?i:[%][vighd][a-z0-9._]*)'
+        name: 'portmodifier.ngspice'
+      }
+      {include: '#nodesAny'}
+    ]
   other:
     patterns: [
       {include: '#strings'}
