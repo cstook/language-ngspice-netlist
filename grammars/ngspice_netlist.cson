@@ -125,35 +125,35 @@ repository:
         match: '^(?i:([qm][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(?![a-z0-9_]+\\s*=)([a-z0-9_]+))'
         captures:
           1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: name: 'constant.node.ngspice'
-          5: name: 'constant.node.ngspice'
+          2: patterns: [{ include: '#nodesAny' }]
+          3: patterns: [{ include: '#nodesAny' }]
+          4: patterns: [{ include: '#nodesAny' }]
+          5: patterns: [{ include: '#nodesAny' }]
           6: name: 'name.ngspice'
       }
       {
         match: '^(?i:([sgetoy][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+))'
         captures:
           1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: name: 'constant.node.ngspice'
-          5: name: 'constant.node.ngspice'
+          2: patterns: [{ include: '#nodesAny' }]
+          3: patterns: [{ include: '#nodesAny' }]
+          4: patterns: [{ include: '#nodesAny' }]
+          5: patterns: [{ include: '#nodesAny' }]
       }
       {
         match: '^(?i:([uqjzm][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+)\\s+(\\S+))'
         captures:
           1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
-          4: name: 'constant.node.ngspice'
+          2: patterns: [{ include: '#nodesAny' }]
+          3: patterns: [{ include: '#nodesAny' }]
+          4: patterns: [{ include: '#nodesAny' }]
       }
       {
         match: '^(?i:([rlcvidkwfhbeg][a-z0-9_]+)\\s+(\\S+)\\s+(\\S+))'
         captures:
           1: name: 'element.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
+          2: patterns: [{ include: '#nodesAny' }]
+          3: patterns: [{ include: '#nodesAny' }]
       }
       {
         match: '^(?i:([xp][a-z0-9_]+)\\s+(.*?)\\s+(\\S+)\\s+(\\S+=.*$))'
@@ -174,7 +174,7 @@ repository:
       }
       {
         # code model element with model name at end on first line
-        match: '^(?i:(a[a-z0-9_]+)\\s+(.*)\\s+([a-z_][a-z0-9._]*)$)'
+        match: '^(?i:(a[a-z0-9_]+)\\s+(.*)\\s+([a-z_][a-z0-9._]*)\\s*$)'
         captures:
           1: name: 'element.ngspice'
           2: patterns: [{include: '#aTypeNodes'}] #[{include: '#aTypeNodes'}]
@@ -186,7 +186,7 @@ repository:
     name: 'entity.punctuation.plus.ngspice'
   nodesAny:
     match: '([!A-Za-z0-9._]+)'
-    name: 'constant.node.ngspice'
+    name: 'entity.other.inherited-class'
   aTypeNodes:
     patterns: [
       {
@@ -202,8 +202,9 @@ repository:
       {include: '#voltage'}
       {include: '#function'}
       {include: '#special_variables'}
+      {include: '#constantOther'}
       {include: '#ngspice_name'}
-      {include: '#constant'}
+      {include: '#constantNumeric'}
    ]
   seperator:
     match: '([ ,=]+)'
@@ -215,23 +216,26 @@ repository:
     captures:
       1: name: 'punctuation.space.ngspice'
   special_variables:
-    match: '(?i:((?:time)|(?:temper)|(?:hertz))(?!\\S))'
+    match: '(?i:(?:\\btime\\b)|(?:\\btemper\\b)|(?:\\bhertz\\b))'
     name: 'variable.language.ngspice'
   ngspice_name:
-    match: '[A-Za-z][A-Za-z0-9_]*'
+    match: '[A-Za-z][A-Za-z0-9._]*'
     name: 'name.ngspice'
   function:
     match: '([A-Za-z][A-Za-z0-9_]*)([(])'
     captures:
       1: name: 'support.function.ngspice'
       2: name: 'punctuation.leftpar.ngspice'
-  constant:
+  constantNumeric:
     match: '(?i:(?<![a-z_])((?:[0-9]+(?:[.][0-9]*)?|[.][0-9]+)(?:[e][-+]?[0-9]+)?)(k|meg|mil|g|t|m|u|μ|n|p|f){0,1}([a-z0-9_]*))'
     name: 'meta.numeric.ngspice'
     captures:
       1: name: 'constant.numeric.ngspice'
       2: name: 'constant.numeric.ngspice'
       3: name: ''
+  constantOther:
+    match: '(?i:(?:\\btrue\\b)|(?:\\bfalse\\b))'
+    name: 'constant.other.ngspice'
   strings:
     patterns: [
       {
@@ -255,13 +259,13 @@ repository:
         match: '(v|V)[(]([^(),]+)[,]([^(),]*)[)]'
         captures:
           1: name: 'support.function.ngspice'
-          2: name: 'constant.node.ngspice'
-          3: name: 'constant.node.ngspice'
+          2: name: 'entity.other.inherited-class'
+          3: name: 'entity.other.inherited-class'
       }
       {
         match: '(v|V)[(]([^(),]+)[)]'
         captures:
           1: name: 'support.function.ngspice'
-          2: name: 'constant.node.ngspice'
+          2: name: 'entity.other.inherited-class'
       }
     ]
